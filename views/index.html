@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Manager</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Product Manager</h1>
+        <form id="product-form" enctype="multipart/form-data" method="POST" action="/">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea class="form-control" id="description" name="description" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="price">Price</label>
+                <input type="number" class="form-control" id="price" name="price" required>
+            </div>
+            <div class="form-group">
+                <label for="image">Image</label>
+                <input type="file" class="form-control-file" id="image" name="image" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Product</button>
+        </form>
+        <div id="product-cards" class="mt-4"></div>
+    </div>
+
+<script>
+    const form = document.getElementById('product-form');
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
+        const response = await fetch('http://localhost:5002/api/products', {
+            method: 'POST',
+            body: formData
+        });
+        if (response.ok) {
+            loadProducts(); // Tải lại danh sách sản phẩm
+        }
+    });
+
+    async function loadProducts() {
+        const response = await fetch('http://localhost:5002/api/products');
+        const products = await response.json();
+        const productCards = document.getElementById('product-cards');
+        productCards.innerHTML = '';
+        products.forEach(product => {
+            const card = `
+            <div class="card" style="width: 18rem; margin: 10px; display: inline-block;">
+                <img src="${product.image}" class="card-img-top" alt="${product.name}">
+                <div class="card-body">
+                    <h5 class="card-title">${product.name}</h5>
+                    <p class="card-text">${product.description}</p>
+                    <p class="card-text">$${product.price}</p>
+                </div>
+            </div>
+            `;
+            productCards.innerHTML += card;
+        });
+    }
+
+    loadProducts(); // Tải sản phẩm ngay khi tải trang
+</script>
+</body>
+</html>
